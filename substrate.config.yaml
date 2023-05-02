@@ -1,9 +1,9 @@
 data:
   source:
-    - /root/data/apple  # DON'T CHANGE THIS!
+    - /root/data/apple # DON'T CHANGE THIS!
 
 aws:
-  bucket: {{YOUR_UNIQUE_S3_BUCKET_NAME}}
+  bucket: substrate-data-andlrutt
   region: us-east-2
   managers:
-    't3.medium': 1
+    "t3.medium": 1
