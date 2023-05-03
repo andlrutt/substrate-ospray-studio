@@ -12,10 +12,17 @@
 
 <body>
 	<img class="render"></img>
+	<button onclick="update_from_json_editor()">re-render</button>
+
+	<div id="jsoneditor" style="display: none; width: 400px; height: 400px;"></div>
+
+    
 
 	<script>
-		window.onload = function() {
-			initial_render(true);
+		window.onload = async function() {
+			await initial_render(true);
+			document.getElementById("jsoneditor").style.display = 'block'
+			initialize_json_editor()
 		};
 	</script>
 </body>
