@@ -11,8 +11,39 @@
 </head>
 
 <body>
+	<div></div>
 	<img class="render"></img>
-	<button onclick="update_from_json_editor()">re-render</button>
+	<div style="height: 100%;
+				width: 160px;
+				position: fixed;
+				z-index: 1;
+				top: 0;
+				left: 0;
+				background-color: #fff;
+				overflow-x: hidden;
+				padding-top: 20px;">
+
+		<div style="display: flex; flex-direction: column; justify-content: center;">
+			<div style="display: flex; justify-content: center;">
+				<span>Move Camera</span>
+				<br/><br/>
+			</div>
+			<div style="display: flex; justify-content: center;">
+				<button>↑</button>
+			</div>
+			<br/>
+			<div style="display: flex; justify-content: space-around;">
+				<button>←</button>
+				<button>↓</button>
+				<button>→</button>
+			</div>
+		</div>
+		<button onclick="update_from_json_editor()">re-render</button>
+	</div>
+
+
+	<button onclick="generate_test_movie()">re-render</button>
+
 
 	<div id="jsoneditor" style="display: none; width: 400px; height: 400px;"></div>
 
