@@ -5,6 +5,7 @@
 
 	<script src="js/jsoneditor.min.js"></script>
 	<script src="js/raas.js"></script>
+	<script src="js/gl-matrix-min.js"></script>
 
 	<link rel="stylesheet" href="css/jsoneditor.min.css"></link>
 	<link rel="stylesheet" href="css/style.css"></link>
@@ -25,17 +26,26 @@
 
 		<div style="display: flex; flex-direction: column; justify-content: center;">
 			<div style="display: flex; justify-content: center;">
-				<span>Move Camera Around Focus Point</span>
-				<br/><br/>
+				<span style="text-align: center;">Move Camera Around Focus Point</span>
+				
 			</div>
-			<div style="display: flex; justify-content: center;">
-				<button>↑</button>
+			<br/><br/>
+			<div style="display: flex; justify-content: space-around;">
+				<button onclick="change_rotation(-5, 5)">↖</button>
+				<button onclick="change_rotation(0, 5)">↑</button>
+				<button onclick="change_rotation(5, 5)">↗</button>
 			</div>
 			<br/>
 			<div style="display: flex; justify-content: space-around;">
-				<button>←</button>
-				<button>↓</button>
-				<button>→</button>
+				<button onclick="change_rotation(-5, 0)">←</button>
+				<button style="visibility: hidden">←</button>
+				<button onclick="change_rotation(5, 0)">→</button>
+			</div>
+			<br/>
+			<div style="display: flex; justify-content: space-around;">
+				<button onclick="change_rotation(-5, -5)">↙</button>
+				<button onclick="change_rotation(0, -5)">↓</button>
+				<button onclick="change_rotation(-5, -5)">↘</button>
 			</div>
 
             <br/><br/>
@@ -43,18 +53,20 @@
 			<div style="display: flex; flex-direction: row; justify-content: space-around;">
 				<span>Zoom</span>
                 <br/>
-                <button onclick="change_zoom(1.1)">+</button>
-                <button onclick="change_zoom(0.9)">-</button>
+                <button onclick="change_zoom(-0.25)">+</button>
+                <button onclick="change_zoom(0.25)">-</button>
 			</div>
             <br/><br/>
 
 		</div>
-		<button onclick="keyframe()">Add current view as keyframe</button>
+		<div style="display: flex; flex-direction: column; ">
+			<button onclick="add_movie_keyframe()">Add current view as keyframe</button>
+			<button onclick="btnClick()">re-render</button>
+			<button onclick="generate_movie()">Generate Movie</button>
+		</div>
 	</div>
 
 
-	<button onclick="btnClick()">re-render</button>
-	<button onclick="generate_test_movie()">test_movie</button>
 
 
 	<div id="jsoneditor" style="display: none; width: 400px; height: 400px;"></div>
