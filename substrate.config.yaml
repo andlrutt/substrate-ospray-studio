@@ -1,6 +1,6 @@
 data:
   source:
-    - /root/data/apple # DON'T CHANGE THIS!
+    - /root/data/apple
 
 aws:
   bucket: substrate-data-andlrutt

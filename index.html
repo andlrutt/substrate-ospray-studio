@@ -25,7 +25,7 @@
 
 		<div style="display: flex; flex-direction: column; justify-content: center;">
 			<div style="display: flex; justify-content: center;">
-				<span>Move Camera</span>
+				<span>Move Camera Around Focus Point</span>
 				<br/><br/>
 			</div>
 			<div style="display: flex; justify-content: center;">
@@ -37,8 +37,19 @@
 				<button>↓</button>
 				<button>→</button>
 			</div>
+
+            <br/><br/>
+
+			<div style="display: flex; flex-direction: row; justify-content: space-around;">
+				<span>Zoom</span>
+                <br/>
+                <button onclick="change_zoom(1.1)">+</button>
+                <button onclick="change_zoom(0.9)">-</button>
+			</div>
+            <br/><br/>
+
 		</div>
-		<button onclick="update_from_json_editor()">re-render</button>
+		<button onclick="keyframe()">Add current view as keyframe</button>
 	</div>
 
 
@@ -47,8 +58,6 @@
 
 
 	<div id="jsoneditor" style="display: none; width: 400px; height: 400px;"></div>
-
-    
 
 	<script>
 		window.onload = async function() {
