@@ -15,7 +15,7 @@
 	<div></div>
 	<img class="render"></img>
 	<div style="height: 100%;
-				width: 160px;
+				width: 300px;
 				position: fixed;
 				z-index: 1;
 				top: 0;
@@ -27,9 +27,8 @@
 		<div style="display: flex; flex-direction: column; justify-content: center;">
 			<div style="display: flex; justify-content: center;">
 				<span style="text-align: center;">Move Camera Around Focus Point</span>
-				
 			</div>
-			<br/><br/>
+			<br/>
 			<div style="display: flex; justify-content: space-around;">
 				<button onclick="change_rotation(-5, 5)">↖</button>
 				<button onclick="change_rotation(0, 5)">↑</button>
@@ -47,6 +46,29 @@
 				<button onclick="change_rotation(0, -5)">↓</button>
 				<button onclick="change_rotation(-5, -5)">↘</button>
 			</div>
+			<br/><br/>
+
+			<div style="display: flex; justify-content: center;">
+				<span style="text-align: center;">Turn Camera</span>
+			</div>
+			<br/>
+			<div style="display: flex; justify-content: space-around;">
+				<button onclick="turn_camera([-1,1,0], 1, 'Northwest')">↖</button>
+				<button onclick="turn_camera([0,1,0], 1, 'North')">↑</button>
+				<button onclick="turn_camera([1,1,0], 1, 'Northeast')">↗</button>
+			</div>
+			<br/>
+			<div style="display: flex; justify-content: space-around;">
+				<button onclick="turn_camera([-1, 0, 0], 1, 'west')">←</button>
+				<button style="visibility: hidden">←</button>
+				<button onclick="turn_camera([1,0,0], 1, 'East')">→</button>
+			</div>
+			<br/>
+			<div style="display: flex; justify-content: space-around;">
+				<button onclick="turn_camera([-1,-1,0], 1, 'Southwest')">↙</button>
+				<button onclick="turn_camera([0,-1,0], 1, 'South')">↓</button>
+				<button onclick="turn_camera([1,-1,0], 1, 'Southeast')">↘</button>
+			</div>
 
             <br/><br/>
 
@@ -60,22 +82,30 @@
 
 		</div>
 		<div style="display: flex; flex-direction: column; ">
-			<button onclick="add_movie_keyframe()">Add current view as keyframe</button>
-			<button onclick="btnClick()">re-render</button>
-			<button onclick="generate_movie()">Generate Movie</button>
+			<button onclick="add_movie_keyframe()">Add current scene as keyframe</button>
+			<button onclick="btnClick()" id="rerender_button">Re-render</button>
+			<button onclick="toggle_recording()" id="record_button">Start Recording</button>
+			<button onclick="generate_movie()" id="generate_movie_button">Generate Movie</button>
+		</div>
+		<br/><br/>
+	
+		<div >
+			<span>Current movie keyframes (click to render)</span><br/><br/>
+			<div id="keyframes" style="display: flex; flex-direction: column; overflow: scroll;">
+				<button onclick="render_initial_scene_graph()">Initial scene graph</button>
+			</div>
 		</div>
 	</div>
 
 
 
-
-	<div id="jsoneditor" style="display: none; width: 400px; height: 400px;"></div>
+	<!-- <div id="jsoneditor" style="display: none; width: 900px; height: 1200px; margin-right: 100px;"></div> -->
 
 	<script>
 		window.onload = async function() {
 			await initial_render(true);
-			document.getElementById("jsoneditor").style.display = 'block'
-			initialize_json_editor()
+			// document.getElementById("jsoneditor").style.display = 'block'
+			// initialize_json_editor()
 		};
 	</script>
 </body>
