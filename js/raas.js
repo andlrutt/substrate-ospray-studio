@@ -1,6 +1,6 @@
 var g_scene_graph = null;
 var initial_scene_graph = null;
-const RAAS_LOCATION = "http://3.15.26.146";
+const RAAS_LOCATION = "http://3.135.209.197";
 var editor = null;
 var movieFrames = [];
 var recording = false;
@@ -89,9 +89,11 @@ async function render_movie(key_frames) {
   // This approach can be used to download the movie: https://stackoverflow.com/questions/19327749/javascript-blob-filename-without-link
 }
 
-function update_from_json_editor() {
+async function update_from_json_editor() {
   const updatedJson = editor.get();
-  re_render(updatedJson);
+  console.log("Re-rendering scene");
+  await re_render(updatedJson);
+  console.log("Scene Re-rendered");
 }
 
 async function initialize_json_editor() {

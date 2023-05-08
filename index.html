@@ -82,6 +82,7 @@
 
 		</div>
 		<div style="display: flex; flex-direction: column; ">
+			<button onclick="update_from_json_editor()">Re-render from JSON editor</button>
 			<button onclick="add_movie_keyframe()">Add current scene as keyframe</button>
 			<button onclick="btnClick()" id="rerender_button">Re-render</button>
 			<button onclick="toggle_recording()" id="record_button">Start Recording</button>
@@ -99,13 +100,13 @@
 
 
 
-	<!-- <div id="jsoneditor" style="display: none; width: 900px; height: 1200px; margin-right: 100px;"></div> -->
+	<div id="jsoneditor" style="display: none; width: 900px; height: 1200px; margin-right: 100px;"></div>
 
 	<script>
 		window.onload = async function() {
 			await initial_render(true);
-			// document.getElementById("jsoneditor").style.display = 'block'
-			// initialize_json_editor()
+			document.getElementById("jsoneditor").style.display = 'block'
+			initialize_json_editor()
 		};
 	</script>
 </body>

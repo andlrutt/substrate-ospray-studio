@@ -1,6 +1,10 @@
 data:
   source:
-    - /root/data/wet_floor
+    - /root/data/apple
+    - /root/data/bust
+    - /root/data/lightbulb
+    - /root/data/table
+    - /root/data/tree
 
 aws:
   bucket: substrate-data-andlrutt
