@@ -1,13 +1,23 @@
 data:
   source:
     - /root/data/apple
-    - /root/data/bust
-    - /root/data/lightbulb
-    - /root/data/table
-    - /root/data/tree
+    # - /mnt/c/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/apple
+    # - /mnt/c/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/bust
+    # - /mnt/c/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/lightbulb
+    # - /mnt/c/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/table
+    # - /mnt/c/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/tree
+    # - C:/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/apple
+    # - C:/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/bust
+    # - C:/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/lightbulb
+    # - C:/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/table
+    # - C:/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/tree
 
-aws:
-  bucket: substrate-data-andlrutt
-  region: us-east-2
-  managers:
-    "t3.medium": 1
+# aws:
+#   bucket: substrate-data-andlrutt
+#   region: us-east-2
+#   managers:
+#     "t3.medium": 1
+
+docker:
+  port: 8000
+  replicas: 1

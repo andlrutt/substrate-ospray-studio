@@ -1,15 +1,108 @@
 var g_scene_graph = null;
 var initial_scene_graph = null;
-const RAAS_LOCATION = "http://3.135.209.197";
+const RAAS_LOCATION = "http://127.0.0.1:8000/";
 var editor = null;
 var movieFrames = [];
 var recording = false;
+var worldObjs = [
+  new WorldObject("tree", "tree_small_02_4k_importer"),
+  new WorldObject("apple", "food_apple_01_4k_importer"),
+  new WorldObject("lightbulb", "lightbulb_01_4k_importer"),
+  new WorldObject("table", "side_table_tall_01_4k_importer"),
+  new WorldObject("bust", "marble_bust_01_4k_importer"),
+];
+
+class WorldObject {
+  sceneGraphObj = null;
+
+  constructor(
+    displayName,
+    internalName,
+    defaultTranslation = [0, 0, 0],
+    defaultRotation = { i: 0, j: 0, k: 0, r: 1 },
+    defaultScale = [1, 1, 1]
+  ) {
+    this.displayName = displayName;
+    this.internalName = internalName;
+    this.defaultTranslation = defaultTranslation;
+    this.defaultRotation = defaultRotation;
+    this.defaultScale = defaultScale;
+  }
+
+  get translation() {
+    return this.sceneGraphObj.find.children[0].children.find(
+      (child) => child.name === "translation"
+    ).value;
+  }
+
+  set translation(val) {
+    this.sceneGraphObj.find.children[0].children.find(
+      (child) => child.name === "translation"
+    ).value = val;
+  }
+
+  get rotation() {
+    return this.sceneGraphObj.find.children[0].children.find(
+      (child) => child.name === "rotation"
+    ).value;
+  }
+
+  set rotation(val) {
+    this.sceneGraphObj.find.children[0].children.find(
+      (child) => child.name === "rotation"
+    ).value = val;
+  }
+
+  get scale() {
+    return this.sceneGraphObj.find.children[0].children.find(
+      (child) => child.name === "scale"
+    ).value;
+  }
+
+  set scale(val) {
+    let objProp = this.sceneGraphObj.find.children[0].children.find(
+      (child) => child.name === "scale"
+    );
+
+    objProp.value = [val, val, val];
+  }
+}
+
+function load_world_objs(scene_graph) {
+  for (i = 0; i < scene_graph.world.children.length; i++) {
+    if (scene_graph.world.children[i].type === "IMPORTER") {
+      let worldObj = worldObjs.find(
+        (worldObj) =>
+          worldObj.internalName === scene_graph.world.children[i].name
+      );
+      worldObj.sceneGraphObj = scene_graph.world.children[i];
+    }
+  }
+  return scene_graph;
+}
+
+function render_world_obj_defaults(worldObjs) {
+  for (let i = 0; i < worldObjs.length; i++) {
+    worldObjs[i].translation = worldObjs[i].defaultTranslation;
+    worldObjs[i].rotation = worldObjs[i].defaultRotation;
+    worldObjs[i].scale = worldObjs[i].defaultScale;
+  }
+}
 
 async function initial_render() {
+  console.log("Calling initial render");
   let res = await fetch(`${RAAS_LOCATION}/render/`);
+  console.log("Initial render responded");
   document.querySelector(".render").src = URL.createObjectURL(await res.blob());
+  console.log("Getting initial scene graph");
   g_scene_graph = await get_scene_graph();
+  console.log("Loading initial objects/setting defaults");
+  g_scene_graph = load_world_objs(g_scene_graph);
+  render_world_obj_defaults(worldObjs);
   initial_scene_graph = JSON.parse(JSON.stringify(g_scene_graph));
+  console.log("Re-rendering with world obj defaults");
+  await re_render(g_scene_graph);
+  console.log("Re-rendering with world obj defaults complete", g_scene_graph);
 }
 
 async function btnClick() {
@@ -46,7 +139,7 @@ async function get_scene_graph() {
   scene_graph.camera.up = [0.0, 1.0, 0.0];
   scene_graph.camera.view = [0.0, 0.0, -1.0];
 
-  scene_graph.resolution = "1920x1080"; // This can be a description of the resolution such as 720p, 4K, 8K, etc, or a width by height such as 1920x1080.
+  scene_graph.resolution = "720p"; // This can be a description of the resolution such as 720p, 4K, 8K, etc, or a width by height such as 1920x1080.
   scene_graph.samples_per_pixel = 1; // The number of samples per pixel to use when rendering.
   return scene_graph;
 }
