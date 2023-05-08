@@ -1,11 +1,10 @@
 data:
   source:
-    - /root/data/apple
-    # - /mnt/c/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/apple
-    # - /mnt/c/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/bust
-    # - /mnt/c/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/lightbulb
-    # - /mnt/c/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/table
-    # - /mnt/c/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/tree
+    - /home/andrew/Desktop/Classes/COSC_552/substrate-ospray-studio/data/apple
+    - /home/andrew/Desktop/Classes/COSC_552/substrate-ospray-studio/data/bust
+    - /home/andrew/Desktop/Classes/COSC_552/substrate-ospray-studio/data/lightbulb
+    - /home/andrew/Desktop/Classes/COSC_552/substrate-ospray-studio/data/table
+    - /home/andrew/Desktop/Classes/COSC_552/substrate-ospray-studio/data/tree
     # - C:/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/apple
     # - C:/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/bust
     # - C:/Users/andre/OneDrive/Desktop/Classes/COSC 552/substrate-ospray-studio/data/lightbulb

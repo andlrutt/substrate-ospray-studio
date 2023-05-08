@@ -1,18 +1,3 @@
-var g_scene_graph = null;
-var initial_scene_graph = null;
-const RAAS_LOCATION = "http://127.0.0.1:8000/";
-var editor = null;
-var movieFrames = [];
-var recording = false;
-var worldObjs = [
-  new WorldObject("tree", "tree_small_02_4k_importer"),
-  new WorldObject("apple", "food_apple_01_4k_importer"),
-  new WorldObject("lightbulb", "lightbulb_01_4k_importer"),
-  new WorldObject("table", "side_table_tall_01_4k_importer"),
-  new WorldObject("bust", "marble_bust_01_4k_importer"),
-];
-var selectedObject = null;
-
 class WorldObject {
   sceneGraphObj = null;
 
@@ -31,43 +16,59 @@ class WorldObject {
   }
 
   get translation() {
-    return this.sceneGraphObj.find.children[0].children.find(
+    return this.sceneGraphObj.children[0].children.find(
       (child) => child.name === "translation"
     ).value;
   }
 
   set translation(val) {
-    this.sceneGraphObj.find.children[0].children.find(
+    this.sceneGraphObj.children[0].children.find(
       (child) => child.name === "translation"
     ).value = val;
   }
 
   get rotation() {
-    return this.sceneGraphObj.find.children[0].children.find(
+    return this.sceneGraphObj.children[0].children.find(
       (child) => child.name === "rotation"
     ).value;
   }
 
   set rotation(val) {
-    this.sceneGraphObj.find.children[0].children.find(
+    this.sceneGraphObj.children[0].children.find(
       (child) => child.name === "rotation"
     ).value = val;
   }
 
   get scale() {
-    return this.sceneGraphObj.find.children[0].children.find(
+    return this.sceneGraphObj.children[0].children.find(
       (child) => child.name === "scale"
     ).value;
   }
 
   set scale(val) {
-    let objProp = this.sceneGraphObj.find.children[0].children.find(
+    let objProp = this.sceneGraphObj.children[0].children.find(
       (child) => child.name === "scale"
     );
 
     objProp.value = [val, val, val];
   }
 }
+
+var g_scene_graph = null;
+var initial_scene_graph = null;
+const RAAS_LOCATION = "http://127.0.0.1:8000/";
+var editor = null;
+var movieFrames = [];
+var recording = false;
+var worldObjs = [
+  new WorldObject("tree", "tree_small_02_4k_importer"),
+  new WorldObject("apple", "food_apple_01_4k_importer"),
+  new WorldObject("lightbulb", "lightbulb_01_4k_importer"),
+  new WorldObject("table", "side_table_tall_01_4k_importer"),
+  new WorldObject("bust", "marble_bust_01_4k_importer"),
+];
+var selectedObject = null;
+
 
 function load_world_objs(scene_graph) {
   for (i = 0; i < scene_graph.world.children.length; i++) {
@@ -77,6 +78,7 @@ function load_world_objs(scene_graph) {
           worldObj.internalName === scene_graph.world.children[i].name
       );
       worldObj.sceneGraphObj = scene_graph.world.children[i];
+      console.log(worldObj.sceneGraphObj)
     }
   }
   return scene_graph;
@@ -262,7 +264,11 @@ function change_object_position(deltaVec) {
   deltaVec.forEach((dim, i) => (selectedObject.translation[i] += dim));
 }
 
-function change_object_scale(deltaScale)
+function change_object_scale(deltaScale) {
+  for (let i = 0; i < selectedObject.scale.length; i++) {
+    selectedObject[i] += deltaScale
+  }
+}
 
 function change_camera_rotation(xDegrees, yDegrees) {
   const xRadians = degrees_to_radians(xDegrees);

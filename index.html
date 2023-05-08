@@ -123,8 +123,23 @@
 				</div>
 				<div>
 					<span>Change object scale</span>
-					<button>+</button>
-					<button>-</button>
+					<button onclick="change_object_scale(0.1)">+</button>
+					<button onclick="change_object_scale(-0.1)">-</button>
+				</div>
+				<div>
+					<span>Change object rotation</span>
+					<div>
+						<button onclick="change_object_position([0, 0, -0.1])">-i</button>
+						<button onclick="change_object_position([0, 0, 0.1])">+i</button>
+					</div>
+					<div>
+						<button onclick="change_object_position([0, 0, -0.1])">-j</button>
+						<button onclick="change_object_position([0, 0, 0.1])">+j</button>
+					</div>
+					<div>
+						<button onclick="change_object_position([0, 0, -0.1])">-k</button>
+						<button onclick="change_object_position([0, 0, 0.1])">+k</button>
+					</div>
 				</div>
 			</div>
 		</div>
