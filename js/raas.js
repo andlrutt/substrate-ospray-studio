@@ -11,6 +11,7 @@ var worldObjs = [
   new WorldObject("table", "side_table_tall_01_4k_importer"),
   new WorldObject("bust", "marble_bust_01_4k_importer"),
 ];
+var selectedObject = null;
 
 class WorldObject {
   sceneGraphObj = null;
@@ -89,6 +90,20 @@ function render_world_obj_defaults(worldObjs) {
   }
 }
 
+function create_obj_buttons() {
+  let container = document.getElementById("obj_buttons");
+  let selectedObjSpan = document.getElementById("obj_selected_span");
+  for (let i = 0; i < worldObjs.length; i++) {
+    let objButton = document.createElement("button");
+    objButton.id = worldObjs[i].displayName;
+    objButton.onclick = () => {
+      selectedObject = worldObjs[i];
+      obj_selected_span.textContent = `Selected object: ${selectedObject.displayName}`;
+    };
+    container.appendChild(objButton);
+  }
+}
+
 async function initial_render() {
   console.log("Calling initial render");
   let res = await fetch(`${RAAS_LOCATION}/render/`);
@@ -102,6 +117,7 @@ async function initial_render() {
   initial_scene_graph = JSON.parse(JSON.stringify(g_scene_graph));
   console.log("Re-rendering with world obj defaults");
   await re_render(g_scene_graph);
+  create_obj_buttons();
   console.log("Re-rendering with world obj defaults complete", g_scene_graph);
 }
 
@@ -242,7 +258,13 @@ async function generate_movie() {
   );
 }
 
-function change_rotation(xDegrees, yDegrees) {
+function change_object_position(deltaVec) {
+  deltaVec.forEach((dim, i) => (selectedObject.translation[i] += dim));
+}
+
+function change_object_scale(deltaScale)
+
+function change_camera_rotation(xDegrees, yDegrees) {
   const xRadians = degrees_to_radians(xDegrees);
   const yRadians = degrees_to_radians(yDegrees);
   const rotationMatrix = glMatrix.mat4.create();
