@@ -175,12 +175,12 @@ async function re_render(scene_graph) {
   console.log("Scene Re-rendered", scene_graph);
 }
 
-async function render_movie(key_frames) {
+async function render_movie(key_frames, fps, length) {
   const options = {
     body: JSON.stringify({
-      fps: 10,
+      fps: fps,
       frames: key_frames,
-      length: 10,
+      length: length,
     }),
     headers: { "Content-Type": "application/json" },
     method: "POST",
@@ -250,12 +250,17 @@ async function generate_movie() {
   let movieButton = document.getElementById("generate_movie_button");
   movieButton.textContent = "Generating movie...";
   movieButton.disabled = true;
-  await render_movie(movieFrames);
+
+  let fps = document.getElementById("movie_fps").value
+  let length = document.getElementById("movie_length").value
+  console.log(fps, length)
+  await render_movie(movieFrames, fps, length);
+
+
   movieButton.textContent = "Generate Movie";
   movieButton.disabled = false;
   console.log(
-    `Generated and downloaded movie. Took ${
-      (new Date().getTime() - startTime) / 1000
+    `Generated and downloaded movie. Took ${(new Date().getTime() - startTime) / 1000
     } seconds.`
   );
 }

@@ -89,7 +89,6 @@
 					<button onclick="add_movie_keyframe()">Add current scene as keyframe</button>
 					<button onclick="btnClick()" id="rerender_button">Re-render</button>
 					<button onclick="toggle_recording()" id="record_button">Start Recording</button>
-					<button onclick="generate_movie()" id="generate_movie_button">Generate Movie</button>
 				</div>
 				<br/><br/>
 			
@@ -140,6 +139,15 @@
 						<button onclick="change_object_position([0, 0, -0.1])">-k</button>
 						<button onclick="change_object_position([0, 0, 0.1])">+k</button>
 					</div>
+				</div>
+
+				<div>
+					<span>Movie render options</span>
+					<label for="fps">FPS:</label><br>
+					<input type="number" id="movie_fps" name="movie_fps" value="10"><br>
+					<label for="length">Length (seconds):</label><br>
+					<input type="number" id="movie_length" name="movie_length" value="5"><br><br>
+					<button onclick="generate_movie()" id="generate_movie_button">Generate Movie</button>
 				</div>
 			</div>
 		</div>
