@@ -63,8 +63,8 @@ var movieFrames = [];
 var recording = false;
 var worldObjs = [
   new WorldObject("Tree", "tree_small_02_4k_importer", [0, -2, -10], {i: 0, j: 0, k: 0, r: 1}, 4),
-  new WorldObject("Apple", "food_apple_01_4k_importer", [0, 4, -0.3], {i: 0, j: 0, k: 0, r: 1}, 0),
-  new WorldObject("Lightbulb", "lightbulb_01_4k_importer", [0, 0, -0.1], {i: 0, j: 0, k: 0, r: 1}, 1),
+  new WorldObject("Apple", "food_apple_01_4k_importer", [0, 4, -0.3], {i: 0, j: 0, k: 0, r: 1}, 1),
+  new WorldObject("Lightbulb", "lightbulb_01_4k_importer", [0, 0, -0.1], {i: 0, j: 0, k: 0, r: 1}, 0),
   new WorldObject("Table", "side_table_tall_01_4k_importer", [0, -1, -0.1], {i: 0, j: 0, k: 0, r: 1}, 1),
   new WorldObject("Bust", "marble_bust_01_4k_importer", [0, -0.3, -0.1], {i: 0, j: 0, k: 0, r: 1}, 1),
 ];
@@ -258,11 +258,19 @@ async function generate_movie() {
 
 function change_object_position(deltaVec) {
   deltaVec.forEach((dim, i) => (selectedObject.translation[i] += dim));
+
+  if (recording) {
+    add_movie_keyframe(`Object translate: ${selectedObject.displayName} [${deltaVec[0]},${deltaVec[1]},${deltaVec[2]}]`);
+  }
 }
 
 function change_object_scale(deltaScale) {
   for (let i = 0; i < selectedObject.scale.length; i++) {
     selectedObject.scale[i] += deltaScale
+  }
+
+  if (recording) {
+    add_movie_keyframe(`Object scale: ${selectedObject.displayName} by ${deltaScale}`);
   }
 }
 
@@ -273,6 +281,10 @@ function change_object_rotation(deltaVec) {
     j: j + deltaVec[1],
     k: k + deltaVec[2],
     r: r + deltaVec[3],
+  }
+
+  if (recording) {
+    add_movie_keyframe(`Object rotate: ${selectedObject.displayName} {i:${deltaVec[0]},j:${deltaVec[1]},k:${deltaVec[2]}}`);
   }
 }
 
