@@ -1,4 +1,4 @@
-
+// class to interact with scene objects easily
 class WorldObject {
   sceneGraphObj = null;
 
@@ -70,7 +70,7 @@ var worldObjs = [
 ];
 var selectedObject = null;
 
-
+// associates the scene objects in the scene_graph with WorldObject objects
 function load_world_objs(scene_graph) {
   for (i = 0; i < scene_graph.world.children.length; i++) {
     if (scene_graph.world.children[i].type === "IMPORTER") {
@@ -83,6 +83,7 @@ function load_world_objs(scene_graph) {
   }
 }
 
+// sets default values on scene_graph objects
 function render_world_obj_defaults(worldObjs) {
   initial = JSON.stringify(g_scene_graph)
   for (let i = 0; i < worldObjs.length; i++) {
@@ -92,6 +93,7 @@ function render_world_obj_defaults(worldObjs) {
   }
 }
 
+// sets the currently-selected object. object transformations are applied to this object
 function select_object(option) {
   let i;
   for (i = 0; i < worldObjs.length; i++) {
@@ -99,20 +101,15 @@ function select_object(option) {
       break;
   }
   selectedObject = worldObjs[i];
-  console.log(selectedObject)
 }
 
+// populates the Object dropdown with the scene_graph objects
 function create_obj_options() {
   let container = document.getElementById("obj_options");
-  let selectedObjSpan = document.getElementById("obj_selected_span");
   for (let i = 0; i < worldObjs.length; i++) {
     let objOption = document.createElement("option");
     objOption.id = worldObjs[i].displayName;
     objOption.textContent = worldObjs[i].displayName;
-    objOption.onselect = () => {
-      selectedObject = worldObjs[i];
-      selectedObjSpan.textContent = `Selected object: ${selectedObject.displayName}`;
-    };
     container.appendChild(objOption);
   }
 }
@@ -121,7 +118,6 @@ async function initial_render() {
 
   console.log("Getting initial scene graph");
   g_scene_graph = await get_scene_graph();
-  console.log("Initial scene graph retrieved");
   console.log("Loading initial objects/setting defaults");
   load_world_objs(g_scene_graph);
 
@@ -135,8 +131,8 @@ async function initial_render() {
   console.log("Rendering with world obj defaults complete", g_scene_graph);
 }
 
-
-async function btnClick() {
+// disables re-render button while re-rendering
+async function handle_re_render() {
   let renderButton = document.getElementById("rerender_button");
   renderButton.disabled = true;
   renderButton.textContent = "Rendering...";
@@ -145,6 +141,7 @@ async function btnClick() {
   renderButton.disabled = false;
 }
 
+// if recording, all camera/object movements generate their own keyframe
 function toggle_recording() {
   let record_button = document.getElementById("record_button");
   recording = !recording;
@@ -152,6 +149,7 @@ function toggle_recording() {
   record_button.textContent = recording ? "Stop Recording" : "Start Recording";
 }
 
+// used to revert render to initial scene graph
 async function render_initial_scene_graph() {
   let renderButton = document.getElementById("rerender_button");
   renderButton.disabled = true;
@@ -164,14 +162,13 @@ async function render_initial_scene_graph() {
 async function get_scene_graph() {
   const res = await fetch(`${RAAS_LOCATION}/sg/`);
   const scene_graph = await res.json();
-  // NOTE: These commands add extra options to configure OSPRay Studio beyond the normal SceneGraph.
-  // To modify the camera, you should use these vectors rather than the transformation vectors.
+
   scene_graph.camera.position = [0.0, 0.0, 3.0];
   scene_graph.camera.up = [0.0, 1.0, 0.0];
   scene_graph.camera.view = [0.0, 0.0, -1.0];
 
-  scene_graph.resolution = "720p"; // This can be a description of the resolution such as 720p, 4K, 8K, etc, or a width by height such as 1920x1080.
-  scene_graph.samples_per_pixel = 1; // The number of samples per pixel to use when rendering.
+  scene_graph.resolution = "720p";
+  scene_graph.samples_per_pixel = 1; 
   return scene_graph;
 }
 
@@ -199,6 +196,7 @@ async function render_movie(key_frames, fps, length) {
     method: "POST",
   };
 
+  // renders and downloads movie
   var a = document.createElement("a");
   a.style = "display: none";
   document.body.appendChild(a);
@@ -212,11 +210,13 @@ async function render_movie(key_frames, fps, length) {
   window.URL.revokeObjectURL(movie_url);
 }
 
+// copies the current scene_graph to a movie keyframe
 function add_movie_keyframe(transformText) {
   movieFrames.push(JSON.parse(JSON.stringify(g_scene_graph)));
   create_keyframe_button(transformText);
 }
 
+// creates a button for a movie keyframe. clicking the button returns you to that scenegraph/render
 function create_keyframe_button(transformText) {
   let parent = document.getElementById("keyframes");
   let keyframeButton = document.createElement("button");
@@ -244,7 +244,6 @@ async function generate_movie() {
 
   let fps = document.getElementById("movie_fps").value
   let length = document.getElementById("movie_length").value
-  console.log(fps, length)
   await render_movie(movieFrames, fps, length);
 
 
@@ -254,126 +253,4 @@ async function generate_movie() {
     `Generated and downloaded movie. Took ${(new Date().getTime() - startTime) / 1000
     } seconds.`
   );
-}
-
-function change_object_position(deltaVec) {
-  deltaVec.forEach((dim, i) => (selectedObject.translation[i] += dim));
-
-  if (recording) {
-    add_movie_keyframe(`Object translate: ${selectedObject.displayName} [${deltaVec[0]},${deltaVec[1]},${deltaVec[2]}]`);
-  }
-}
-
-function change_object_scale(deltaScale) {
-  for (let i = 0; i < selectedObject.scale.length; i++) {
-    selectedObject.scale[i] += deltaScale
-  }
-
-  if (recording) {
-    add_movie_keyframe(`Object scale: ${selectedObject.displayName} by ${deltaScale}`);
-  }
-}
-
-function change_object_rotation(deltaVec) {
-  let {i, j, k, r} = selectedObject.rotation;
-  selectedObject.rotation = {
-    i: i + deltaVec[0],
-    j: j + deltaVec[1],
-    k: k + deltaVec[2],
-    r: r + deltaVec[3],
-  }
-
-  if (recording) {
-    add_movie_keyframe(`Object rotate: ${selectedObject.displayName} {i:${deltaVec[0]},j:${deltaVec[1]},k:${deltaVec[2]}}`);
-  }
-}
-
-function change_camera_rotation(xDegrees, yDegrees) {
-  const xRadians = degrees_to_radians(xDegrees);
-  const yRadians = degrees_to_radians(yDegrees);
-  const rotationMatrix = glMatrix.mat4.create();
-
-  // calculates a vector perpendicular to a static 'up' and the camera pos vector
-  const perpendicularVec = glMatrix.vec3.create();
-  glMatrix.vec3.cross(
-    perpendicularVec,
-    g_scene_graph.camera.position,
-    [0, 1, 0]
-  );
-  glMatrix.vec3.normalize(perpendicularVec, perpendicularVec);
-
-  // rotate horizontally (about y axis)
-  glMatrix.mat4.rotate(rotationMatrix, rotationMatrix, xRadians, [0, 1, 0]);
-
-  // rotate vertically (about vector perpendicular to 'up' (or y axis))
-  glMatrix.mat4.rotate(
-    rotationMatrix,
-    rotationMatrix,
-    yRadians,
-    perpendicularVec
-  );
-
-  // applies rotations to camera
-  glMatrix.vec3.transformMat4(
-    g_scene_graph.camera.position,
-    g_scene_graph.camera.position,
-    rotationMatrix
-  );
-
-  if (recording) {
-    add_movie_keyframe(`Camera rotate: ${xDegrees}° in x, ${yDegrees}° in y`);
-  }
-
-  return g_scene_graph;
-}
-
-function change_zoom(delta) {
-  // get vector from scene_graph.camera.view to scene_graph.camera.position
-  const relativeCameraPosition = [
-    g_scene_graph.camera.position[0] - g_scene_graph.camera.view[0],
-    g_scene_graph.camera.position[1] - g_scene_graph.camera.view[1],
-    g_scene_graph.camera.position[2] - g_scene_graph.camera.view[2],
-  ];
-
-  const positionNormal = normalize([...relativeCameraPosition]);
-
-  // zoom out by scaling the normalized vec
-  for (let i = 0; i < 3; i++) {
-    positionNormal[i] *= delta;
-    relativeCameraPosition[i] += positionNormal[i];
-    g_scene_graph.camera.position[i] =
-      g_scene_graph.camera.view[i] + relativeCameraPosition[i];
-  }
-
-  if (recording) {
-    add_movie_keyframe(
-      `Camera zoom ${delta > 0 ? "out" : "in"} of ${delta} units`
-    );
-  }
-
-  return g_scene_graph;
-}
-
-function turn_camera(direction, amount, directionAsString) {
-  for (let i = 0; i < 3; i++) {
-    g_scene_graph.camera.view[i] += direction[i] * amount * 0.25;
-  }
-  if (recording) {
-    add_movie_keyframe(`Camera turn ${amount} units ${directionAsString}`);
-  }
-  console.log(g_scene_graph.camera.view);
-}
-
-function normalize(vec) {
-  const length = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
-
-  vec[0] = vec[0] / length;
-  vec[1] = vec[1] / length;
-  vec[2] = vec[2] / length;
-
-  return vec;
-}
-
-function degrees_to_radians(degrees) {
-  return (degrees * Math.PI) / 180;
 }

@@ -5,6 +5,8 @@
 
 	<script src="js/jsoneditor.min.js"></script>
 	<script src="js/raas.js"></script>
+	<script src="js/obj_transformations.js"></script>
+	<script src="js/camera_transformations.js"></script>
 	<script src="js/gl-matrix-min.js"></script>
 	
 	<link rel="stylesheet" href="css/jsoneditor.min.css"></link>
@@ -89,7 +91,7 @@
 				<div style="display: flex; flex-direction: column; ">
 					<h2 style="align-self: center;">Keyframe Controls</h2>
 					<button onclick="add_movie_keyframe()">Add current scene as keyframe</button>
-					<button onclick="btnClick()" id="rerender_button">Re-render</button>
+					<button onclick="handle_re_render()" id="rerender_button">Re-render</button>
 					<button onclick="toggle_recording()" id="record_button">Start Recording</button>
 				</div>
 				<br/><br/>
@@ -109,8 +111,6 @@
 				<select id="obj_options" onchange="select_object(this)">
 					<option value="none" selected disabled hidden>-- Select an Object --</option>
 				</select>
-				<br/><br/>
-				<span id="obj_selected_span">Selected object: </span>
 				<br/><br/>
 				<span>Change selected object position</span>
 				<br/>
