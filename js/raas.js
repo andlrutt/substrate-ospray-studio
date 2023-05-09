@@ -1,3 +1,4 @@
+
 class WorldObject {
   sceneGraphObj = null;
 
@@ -6,7 +7,7 @@ class WorldObject {
     internalName,
     defaultTranslation = [0, 0, 0],
     defaultRotation = { i: 0, j: 0, k: 0, r: 1 },
-    defaultScale = [1, 1, 1]
+    defaultScale = 1
   ) {
     this.displayName = displayName;
     this.internalName = internalName;
@@ -61,11 +62,11 @@ var editor = null;
 var movieFrames = [];
 var recording = false;
 var worldObjs = [
-  new WorldObject("tree", "tree_small_02_4k_importer"),
-  new WorldObject("apple", "food_apple_01_4k_importer"),
-  new WorldObject("lightbulb", "lightbulb_01_4k_importer"),
-  new WorldObject("table", "side_table_tall_01_4k_importer"),
-  new WorldObject("bust", "marble_bust_01_4k_importer"),
+  new WorldObject("Tree", "tree_small_02_4k_importer", [0, -2, -10], {i: 0, j: 0, k: 0, r: 1}, 4),
+  new WorldObject("Apple", "food_apple_01_4k_importer", [0, 4, -0.3], {i: 0, j: 0, k: 0, r: 1}, 0),
+  new WorldObject("Lightbulb", "lightbulb_01_4k_importer", [0, 0, -0.1], {i: 0, j: 0, k: 0, r: 1}, 1),
+  new WorldObject("Table", "side_table_tall_01_4k_importer", [0, -1, -0.1], {i: 0, j: 0, k: 0, r: 1}, 1),
+  new WorldObject("Bust", "marble_bust_01_4k_importer", [0, -0.3, -0.1], {i: 0, j: 0, k: 0, r: 1}, 1),
 ];
 var selectedObject = null;
 
@@ -78,13 +79,12 @@ function load_world_objs(scene_graph) {
           worldObj.internalName === scene_graph.world.children[i].name
       );
       worldObj.sceneGraphObj = scene_graph.world.children[i];
-      console.log(worldObj.sceneGraphObj)
     }
   }
-  return scene_graph;
 }
 
 function render_world_obj_defaults(worldObjs) {
+  initial = JSON.stringify(g_scene_graph)
   for (let i = 0; i < worldObjs.length; i++) {
     worldObjs[i].translation = worldObjs[i].defaultTranslation;
     worldObjs[i].rotation = worldObjs[i].defaultRotation;
@@ -92,36 +92,49 @@ function render_world_obj_defaults(worldObjs) {
   }
 }
 
-function create_obj_buttons() {
-  let container = document.getElementById("obj_buttons");
+function select_object(option) {
+  let i;
+  for (i = 0; i < worldObjs.length; i++) {
+    if (worldObjs[i].displayName === option.value)
+      break;
+  }
+  selectedObject = worldObjs[i];
+  console.log(selectedObject)
+}
+
+function create_obj_options() {
+  let container = document.getElementById("obj_options");
   let selectedObjSpan = document.getElementById("obj_selected_span");
   for (let i = 0; i < worldObjs.length; i++) {
-    let objButton = document.createElement("button");
-    objButton.id = worldObjs[i].displayName;
-    objButton.onclick = () => {
+    let objOption = document.createElement("option");
+    objOption.id = worldObjs[i].displayName;
+    objOption.textContent = worldObjs[i].displayName;
+    objOption.onselect = () => {
       selectedObject = worldObjs[i];
-      obj_selected_span.textContent = `Selected object: ${selectedObject.displayName}`;
+      selectedObjSpan.textContent = `Selected object: ${selectedObject.displayName}`;
     };
-    container.appendChild(objButton);
+    container.appendChild(objOption);
   }
 }
 
 async function initial_render() {
-  console.log("Calling initial render");
-  let res = await fetch(`${RAAS_LOCATION}/render/`);
-  console.log("Initial render responded");
-  document.querySelector(".render").src = URL.createObjectURL(await res.blob());
+
   console.log("Getting initial scene graph");
   g_scene_graph = await get_scene_graph();
+  console.log("Initial scene graph retrieved");
   console.log("Loading initial objects/setting defaults");
-  g_scene_graph = load_world_objs(g_scene_graph);
+  load_world_objs(g_scene_graph);
+
+
   render_world_obj_defaults(worldObjs);
   initial_scene_graph = JSON.parse(JSON.stringify(g_scene_graph));
-  console.log("Re-rendering with world obj defaults");
+  
+  console.log("Rendering with world obj defaults");
   await re_render(g_scene_graph);
-  create_obj_buttons();
-  console.log("Re-rendering with world obj defaults complete", g_scene_graph);
+  create_obj_options();
+  console.log("Rendering with world obj defaults complete", g_scene_graph);
 }
+
 
 async function btnClick() {
   let renderButton = document.getElementById("rerender_button");
@@ -153,7 +166,7 @@ async function get_scene_graph() {
   const scene_graph = await res.json();
   // NOTE: These commands add extra options to configure OSPRay Studio beyond the normal SceneGraph.
   // To modify the camera, you should use these vectors rather than the transformation vectors.
-  scene_graph.camera.position = [0.0, 0.0, 1.0];
+  scene_graph.camera.position = [0.0, 0.0, 3.0];
   scene_graph.camera.up = [0.0, 1.0, 0.0];
   scene_graph.camera.view = [0.0, 0.0, -1.0];
 
@@ -163,7 +176,7 @@ async function get_scene_graph() {
 }
 
 async function re_render(scene_graph) {
-  console.log("Re-rendering scene");
+  console.log("Re-rendering scene with scene graph: ", scene_graph);
   const options = {
     body: JSON.stringify(scene_graph),
     headers: { "Content-Type": "application/json" },
@@ -197,28 +210,6 @@ async function render_movie(key_frames, fps, length) {
   a.download = "552 movie.mp4";
   a.click();
   window.URL.revokeObjectURL(movie_url);
-  // This approach can be used to download the movie: https://stackoverflow.com/questions/19327749/javascript-blob-filename-without-link
-}
-
-async function update_from_json_editor() {
-  const updatedJson = editor.get();
-  console.log("Re-rendering scene");
-  await re_render(updatedJson);
-  console.log("Scene Re-rendered");
-}
-
-async function initialize_json_editor() {
-  // create the editor
-  const container = document.getElementById("jsoneditor");
-  const options = {};
-  editor = new JSONEditor(container, options);
-
-  // set json
-  const initialJson = await get_scene_graph();
-  editor.set(initialJson);
-
-  // get json
-  const updatedJson = editor.get();
 }
 
 function add_movie_keyframe(transformText) {
@@ -271,7 +262,17 @@ function change_object_position(deltaVec) {
 
 function change_object_scale(deltaScale) {
   for (let i = 0; i < selectedObject.scale.length; i++) {
-    selectedObject[i] += deltaScale
+    selectedObject.scale[i] += deltaScale
+  }
+}
+
+function change_object_rotation(deltaVec) {
+  let {i, j, k, r} = selectedObject.rotation;
+  selectedObject.rotation = {
+    i: i + deltaVec[0],
+    j: j + deltaVec[1],
+    k: k + deltaVec[2],
+    r: r + deltaVec[3],
   }
 }
 

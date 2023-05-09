@@ -6,13 +6,12 @@
 	<script src="js/jsoneditor.min.js"></script>
 	<script src="js/raas.js"></script>
 	<script src="js/gl-matrix-min.js"></script>
-
+	
 	<link rel="stylesheet" href="css/jsoneditor.min.css"></link>
 	<link rel="stylesheet" href="css/style.css"></link>
 </head>
 
 <body>
-	<div></div>
 	<img class="render"></img>
 	<div style="height: 100%;
 				width: 600px;
@@ -23,11 +22,14 @@
 				background-color: #fff;
 				overflow-x: hidden;
 				padding-top: 20px;">
+		
+		<span id="rendering_placeholder">Rendering Scene...</span>
 
-		<div style="display: flex; flex-direction: row;">
+		<div id="panel_controls" style="display: flex; flex-direction: row; visibility: hidden;">
 			<!-- CAMERA CONTROLS -->
-			<div>
-				<div style="display: flex; flex-direction: column; justify-content: center;">
+			<div style="width: 300px">
+				<div style="display: flex; flex-direction: column; justify-content: center; align-items: c;">
+					<h2 style="align-self: center;">Camera Controls</h2>
 					<div style="display: flex; justify-content: center;">
 						<span style="text-align: center;">Move Camera Around Focus Point</span>
 					</div>
@@ -56,21 +58,21 @@
 					</div>
 					<br/>
 					<div style="display: flex; justify-content: space-around;">
-						<button onclick="turn_camera([-1,1,0], 1, 'Northwest')">↖</button>
-						<button onclick="turn_camera([0,1,0], 1, 'North')">↑</button>
-						<button onclick="turn_camera([1,1,0], 1, 'Northeast')">↗</button>
+						<button onclick="turn_camera([-0.25,0.25,0], 1, 'Northwest')">↖</button>
+						<button onclick="turn_camera([0,0.25,0], 1, 'North')">↑</button>
+						<button onclick="turn_camera([0.25,0.25,0], 1, 'Northeast')">↗</button>
 					</div>
 					<br/>
 					<div style="display: flex; justify-content: space-around;">
-						<button onclick="turn_camera([-1, 0, 0], 1, 'west')">←</button>
+						<button onclick="turn_camera([-0.25, 0, 0], 1, 'west')">←</button>
 						<button style="visibility: hidden">←</button>
-						<button onclick="turn_camera([1,0,0], 1, 'East')">→</button>
+						<button onclick="turn_camera([0.25,0,0], 1, 'East')">→</button>
 					</div>
 					<br/>
 					<div style="display: flex; justify-content: space-around;">
-						<button onclick="turn_camera([-1,-1,0], 1, 'Southwest')">↙</button>
-						<button onclick="turn_camera([0,-1,0], 1, 'South')">↓</button>
-						<button onclick="turn_camera([1,-1,0], 1, 'Southeast')">↘</button>
+						<button onclick="turn_camera([-0.25,-0.25,0], 1, 'Southwest')">↙</button>
+						<button onclick="turn_camera([0,-0.25,0], 1, 'South')">↓</button>
+						<button onclick="turn_camera([0.25,-0.25,0], 1, 'Southeast')">↘</button>
 					</div>
 		
 					<br/><br/>
@@ -85,7 +87,7 @@
 		
 				</div>
 				<div style="display: flex; flex-direction: column; ">
-					<button onclick="update_from_json_editor()">Re-render from JSON editor</button>
+					<h2 style="align-self: center;">Keyframe Controls</h2>
 					<button onclick="add_movie_keyframe()">Add current scene as keyframe</button>
 					<button onclick="btnClick()" id="rerender_button">Re-render</button>
 					<button onclick="toggle_recording()" id="record_button">Start Recording</button>
@@ -101,65 +103,79 @@
 			</div>
 
 			<!-- OBJECT CONTROLS -->
-			<div>
-				<span>Select Object</span>
-				<div style="display: flex; flex-direction: column;" id="obj_buttons"></div>
+			<div style="width: 300px; display: flex; flex-direction: column; align-items: center;">
+				<h2 style="align-self: center;">Object Controls</h2>
+				<span>Select Object to Control</span>
+				<select id="obj_options" onchange="select_object(this)">
+					<option value="none" selected disabled hidden>-- Select an Object --</option>
+				</select>
+				<br/><br/>
 				<span id="obj_selected_span">Selected object: </span>
-				<div>
-					<span>Change object position</span>
+				<br/><br/>
+				<span>Change selected object position</span>
+				<br/>
+				<div style="display: grid">
 					<div>
-						<button onclick="change_object_position([0, 0, -0.1])">-x</button>
-						<button onclick="change_object_position([0, 0, 0.1])">+x</button>
+						<button onclick="change_object_position([-0.1, 0, 0])">-x</button>
+						<button style="visibility: hidden;"></button>
+						<button onclick="change_object_position([0.1, 0, 0])">+x</button>
 					</div>
 					<div>
-						<button onclick="change_object_position([0, 0, -0.1])">-y</button>
-						<button onclick="change_object_position([0, 0, 0.1])">+y</button>
+						<button onclick="change_object_position([0, -0.1, 0])">-y</button>
+						<button style="visibility: hidden;"></button>
+						<button onclick="change_object_position([0, 0.1, 0])">+y</button>
 					</div>
 					<div>
 						<button onclick="change_object_position([0, 0, -0.1])">-z</button>
+						<button style="visibility: hidden;"></button>
 						<button onclick="change_object_position([0, 0, 0.1])">+z</button>
 					</div>
 				</div>
+				<br/><br/>
 				<div>
-					<span>Change object scale</span>
+					<span>Change selected object scale</span>
 					<button onclick="change_object_scale(0.1)">+</button>
 					<button onclick="change_object_scale(-0.1)">-</button>
 				</div>
-				<div>
-					<span>Change object rotation</span>
+				<br/><br/>
+				<span>Change selected object rotation</span>
+				<br/>
+				<div style="display: grid">
 					<div>
-						<button onclick="change_object_position([0, 0, -0.1])">-i</button>
-						<button onclick="change_object_position([0, 0, 0.1])">+i</button>
+						<button onclick="change_object_rotation([-0.1, 0, 0, 0])">-i</button>
+						<button style="visibility: hidden;"></button>
+						<button onclick="change_object_rotation([0.1, 0, 0, 0])">+i</button>
 					</div>
 					<div>
-						<button onclick="change_object_position([0, 0, -0.1])">-j</button>
-						<button onclick="change_object_position([0, 0, 0.1])">+j</button>
+						<button onclick="change_object_rotation([0, -0.1, 0, 0])">-j</button>
+						<button style="visibility: hidden;"></button>
+						<button onclick="change_object_rotation([0, 0.1, 0, 0])">+j</button>
 					</div>
 					<div>
-						<button onclick="change_object_position([0, 0, -0.1])">-k</button>
-						<button onclick="change_object_position([0, 0, 0.1])">+k</button>
+						<button onclick="change_object_rotation([0, 0, -0.1, 0])">-k</button>
+						<button style="visibility: hidden;"></button>
+						<button onclick="change_object_rotation([0, 0, 0.1, 0])">+k</button>
 					</div>
 				</div>
-
+				<br/><br/>
 				<div>
-					<span>Movie render options</span>
+					<h2 style="align-self: center;">Movie Controls</h2>
 					<label for="fps">FPS:</label><br>
 					<input type="number" id="movie_fps" name="movie_fps" value="10"><br>
+					<br/>
 					<label for="length">Length (seconds):</label><br>
 					<input type="number" id="movie_length" name="movie_length" value="5"><br><br>
 					<button onclick="generate_movie()" id="generate_movie_button">Generate Movie</button>
 				</div>
 			</div>
 		</div>
-
-
-	<!-- <div id="jsoneditor" style="display: none; width: 900px; height: 1200px; margin-right: 100px;"></div> -->
+	</div>
 
 	<script>
 		window.onload = async function() {
 			await initial_render(true);
-			// document.getElementById("jsoneditor").style.display = 'block'
-			// initialize_json_editor()
+			document.getElementById("rendering_placeholder").style.display = 'none'
+			document.getElementById("panel_controls").style.visibility = 'visible'
 		};
 	</script>
 </body>
